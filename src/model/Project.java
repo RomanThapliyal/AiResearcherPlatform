@@ -5,9 +5,9 @@ public class Project {
     private String title;
     private String description;
     private String status;
-    private String createdBy;
+    private int createdBy;
 
-    public Project(int projectID,String title, String description, String status, String createdBy){
+    public Project(int projectID,String title, String description, String status, int createdBy){
         this.projectID=projectID;
         this.title=title;
         this.description=description;
@@ -43,10 +43,10 @@ public class Project {
         this.status=status;
     }
 
-    public String getCreatedBy(){
+    public int getCreatedBy(){
         return createdBy;
     }
-    public void setCreatedBY(String createdBy){
+    public void setCreatedBy(int createdBy){
         this.createdBy=createdBy;
     }
 }

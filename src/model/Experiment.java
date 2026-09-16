@@ -52,10 +52,10 @@ public class Experiment {
         this.performanceMetric=performanceMetric;
     }
 
-    public int getReasearcherID(){
+    public int getResearcherID(){
         return researcherID;
     }
-    public void setReasearcherID(int researcherID){
+    public void setResearcherID(int researcherID){
         this.researcherID=researcherID;
     }
 
