@@ -1,6 +1,6 @@
 package model;
 
-public class MLModels {
+public class MLModel {
     private int modelID;
     private String name;
     private int datasetID;
@@ -9,7 +9,7 @@ public class MLModels {
     private int progressPercentage;
     private int researcherID;
 
-    public MLModels(int modelID, String name, int datasetID, String parameters, String trainingStatus, int progressPercentage, int researcherID){
+    public MLModel(int modelID, String name, int datasetID, String parameters, String trainingStatus, int progressPercentage, int researcherID){
         this.modelID=modelID;
         this.name=name;
         this.datasetID=datasetID;
@@ -61,10 +61,10 @@ public class MLModels {
         this.progressPercentage=progressPercentage;
     }
 
-    public int getReasearcherID(){
+    public int getResearcherID(){
         return researcherID;
     }
-    public void setReasearcherID(int researcherID){
+    public void setResearcherID(int researcherID){
         this.researcherID=researcherID;
     }
 }
