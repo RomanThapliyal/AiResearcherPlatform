@@ -82,7 +82,7 @@ CREATE TABLE experiments (
     experiment_id INT PRIMARY KEY AUTO_INCREMENT,
     model_id INT NOT NULL,
     parameters TEXT,
-    results TEXT,
+    result TEXT,
     performance_metric VARCHAR(50),
     researcher_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

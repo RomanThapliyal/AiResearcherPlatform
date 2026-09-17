@@ -32,7 +32,7 @@ public class ExperimentDAO {
         }
     }
 
-    public Experiment getExperimentById(int id) {
+    public Experiment getExperimentByID(int id) {
         String sql = "SELECT * FROM experiments WHERE experiment_id = ?";
 
         try(Connection conn = DBConnection.getConnection();
@@ -51,8 +51,8 @@ public class ExperimentDAO {
                         rs.getInt("researcher_id")
                     );
                 }
-        } catch (SQLException ex){
-            ex.printStackTrace();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
         return null;
     }
@@ -76,8 +76,8 @@ public class ExperimentDAO {
                     );
                     experiments.add(e);
                 } 
-        } catch (SQLException ex){
-            ex.printStackTrace();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
             
         return experiments;
@@ -104,8 +104,8 @@ public class ExperimentDAO {
                         experiments.add(e);
                     }
                 }
-        } catch (SQLException ex){
-            ex.printStackTrace();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
 
         return experiments;
@@ -141,8 +141,8 @@ public class ExperimentDAO {
                 ps.setInt(1, id);
                 int rows = ps.executeUpdate();
                 return rows > 0;
-            } catch (SQLException ex){
-                ex.printStackTrace();
+            } catch (SQLException e){
+                e.printStackTrace();
                 return false;
             }
     }
