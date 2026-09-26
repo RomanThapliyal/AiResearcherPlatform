@@ -143,11 +143,6 @@ public class ProfileDAO {
             }
     }
 
-    /**
-     * TRANSACTION MANAGEMENT DEMO
-     * This method inserts a Project and multiple ProjectTeam members in a single atomic transaction.
-     * If any part fails, the entire operation is rolled back.
-     */
     public boolean addProjectWithTeam(Project p, List<ProjectTeam> teamMembers) {
         String projectSql = "INSERT INTO projects (title, description, status, created_by) VALUES (?, ?, ?, ?)";
         String teamSql = "INSERT INTO project_team (project_id, user_id) VALUES (?, ?)";
@@ -173,7 +168,6 @@ public class ProfileDAO {
                 throw new SQLException("Creating project failed, no rows affected.");
             }
 
-            // Get the auto-generated project_id
             rs = projectPs.getGeneratedKeys();
             int generatedProjectId = 0;
             if (rs.next()) {
@@ -182,7 +176,6 @@ public class ProfileDAO {
                 throw new SQLException("Creating project failed, no ID obtained.");
             }
 
-            // 2. Insert the Project Team Members
             teamPs = conn.prepareStatement(teamSql);
             for (ProjectTeam member : teamMembers) {
                 teamPs.setInt(1, generatedProjectId);
@@ -191,7 +184,6 @@ public class ProfileDAO {
             }
             teamPs.executeBatch();
 
-            // 3. Commit the transaction
             conn.commit();
             return true;
 
