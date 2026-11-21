@@ -4,214 +4,68 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 
-import model.Project;
-import model.ProjectTeam;
+import model.Profile;
 import util.DBConnection;
 
 public class ProfileDAO {
 
-    public boolean addProject(Project p){
-        String sql = "INSERT INTO projects (title, description, status, created_by) VALUES (?, ?, ?, ?)";
+    public boolean addProfile(Profile p) {
+        String sql = "INSERT INTO profiles (user_id, bio, contact_info) VALUES (?, ?, ?)";
 
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                ps.setString(1, p.getTitle());
-                ps.setString(2, p.getDescription());
-                ps.setString(3, p.getStatus());
-                ps.setInt(4, p.getCreatedBy());
+            ps.setInt(1, p.getUserID());
+            ps.setString(2, p.getBio());
+            ps.setString(3, p.getContactInfo());
 
-                int rows = ps.executeUpdate();
-                return rows > 0;
-        } catch (SQLException ex){
-            ex.printStackTrace();
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         }
     }
 
-    public Project getProjectById(int id) {
-        String sql = "SELECT * FROM projects WHERE project_id = ?";
+    public Profile getProfileByUserID(int userID) {
+        String sql = "SELECT * FROM profiles WHERE user_id = ?";
 
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-                ps.setInt(1, id);
-                ResultSet rs = ps.executeQuery();
+            ps.setInt(1, userID);
+            ResultSet rs = ps.executeQuery();
 
-                if(rs.next()){
-                    return new Project(
-                        rs.getInt("project_id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getString("status"),
-                        rs.getInt("created_by")
-                    );
-                }
-        } catch (SQLException ex){
-            ex.printStackTrace();
+            if (rs.next()) {
+                return new Profile(
+                    rs.getInt("profile_id"),
+                    rs.getInt("user_id"),
+                    rs.getString("bio"),
+                    rs.getString("contact_info")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public List<Project> getAllProjects(){
-        List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projects";
+    public boolean updateProfile(Profile p) {
+        String sql = "UPDATE profiles SET bio = ?, contact_info = ? WHERE user_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-                
-                while (rs.next()) {
-                    Project p = new Project(
-                        rs.getInt("project_id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getString("status"),
-                        rs.getInt("created_by")
-                    );
-                    projects.add(p);
-                } 
-        } catch (SQLException ex){
-            ex.printStackTrace();
-        }
-            
-        return projects;
-    }
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-    public List<Project> getProjectsByUser(int userId){
-        List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projects WHERE created_by = ?";
+            ps.setString(1, p.getBio());
+            ps.setString(2, p.getContactInfo());
+            ps.setInt(3, p.getUserID());
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)){
-                
-                ps.setInt(1, userId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        Project p = new Project(
-                            rs.getInt("project_id"),
-                            rs.getString("title"),
-                            rs.getString("description"),
-                            rs.getString("status"),
-                            rs.getInt("created_by")
-                        );
-                        projects.add(p);
-                    }
-                }
-        } catch (SQLException ex){
-            ex.printStackTrace();
-        }
-
-        return projects;
-    }
-
-    public boolean updateProject(Project p){
-        String sql = "UPDATE projects SET title = ?, description = ?, status = ? WHERE project_id = ?";
-
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-                ps.setString(1, p.getTitle());
-                ps.setString(2, p.getDescription());
-                ps.setString(3, p.getStatus());
-                ps.setInt(4, p.getProjectID());
-                
-                int rows = ps.executeUpdate();
-                return rows > 0;
-                
-        } catch (SQLException ex){ 
-            ex.printStackTrace();
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
-        }
-    }
-
-    public boolean deleteProject(int id){
-        String sql = "DELETE FROM projects WHERE project_id = ?";
-
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)){
-
-                ps.setInt(1, id);
-                int rows = ps.executeUpdate();
-                return rows > 0;
-            } catch (SQLException ex){
-                ex.printStackTrace();
-                return false;
-            }
-    }
-
-    public boolean addProjectWithTeam(Project p, List<ProjectTeam> teamMembers) {
-        String projectSql = "INSERT INTO projects (title, description, status, created_by) VALUES (?, ?, ?, ?)";
-        String teamSql = "INSERT INTO project_team (project_id, user_id) VALUES (?, ?)";
-        
-        Connection conn = null;
-        PreparedStatement projectPs = null;
-        PreparedStatement teamPs = null;
-        ResultSet rs = null;
-
-        try {
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); // Start transaction
-
-            // 1. Insert the Project
-            projectPs = conn.prepareStatement(projectSql, Statement.RETURN_GENERATED_KEYS);
-            projectPs.setString(1, p.getTitle());
-            projectPs.setString(2, p.getDescription());
-            projectPs.setString(3, p.getStatus());
-            projectPs.setInt(4, p.getCreatedBy());
-            
-            int affectedRows = projectPs.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Creating project failed, no rows affected.");
-            }
-
-            rs = projectPs.getGeneratedKeys();
-            int generatedProjectId = 0;
-            if (rs.next()) {
-                generatedProjectId = rs.getInt(1);
-            } else {
-                throw new SQLException("Creating project failed, no ID obtained.");
-            }
-
-            teamPs = conn.prepareStatement(teamSql);
-            for (ProjectTeam member : teamMembers) {
-                teamPs.setInt(1, generatedProjectId);
-                teamPs.setInt(2, member.getUserID());
-                teamPs.addBatch(); // Add to batch for efficiency
-            }
-            teamPs.executeBatch();
-
-            conn.commit();
-            return true;
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            // Rollback in case of error
-            if (conn != null) {
-                try {
-                    System.out.println("Transaction is being rolled back...");
-                    conn.rollback();
-                } catch (SQLException rollbackEx) {
-                    rollbackEx.printStackTrace();
-                }
-            }
-            return false;
-        } finally {
-            // Clean up resources and reset auto-commit
-            try {
-                if (rs != null) rs.close();
-                if (projectPs != null) projectPs.close();
-                if (teamPs != null) teamPs.close();
-                if (conn != null) {
-                    conn.setAutoCommit(true); // Reset to default
-                    conn.close();
-                }
-            } catch (SQLException closeEx) {
-                closeEx.printStackTrace();
-            }
         }
     }
 }
