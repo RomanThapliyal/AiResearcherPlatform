@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -33,7 +34,8 @@ public class CollaborationServlet extends HttpServlet {
 
         if (projectIdParam != null) {
             int projectId = Integer.parseInt(projectIdParam);
-            researcherService.getCollaborationsForProject(projectId);
+            List<Collaboration> collaborations = researcherService.getCollaborationsForProject(projectId);
+            request.setAttribute("collaborations", collaborations);
         }
 
         request.getRequestDispatcher("collaboration.jsp")
