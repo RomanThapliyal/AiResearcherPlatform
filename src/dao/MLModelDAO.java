@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.Statement;
 import  java.sql.Connection;
 import  java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,17 +17,27 @@ public class MLModelDAO {
         String sql = "INSERT INTO models (name, dataset_id, parameters, training_status, progress_percent, researcher_id) VALUES (?, ?, ?, ?, ?, ?)";
 
         try(Connection conn = DBConnection.getConnection();
-            PreparedStatement ps= conn.prepareStatement(sql)){
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
-                ps.setString(1, m.getName());
-                ps.setInt(2, m.getDatasetID());
-                ps.setString(3, m.getParameters());
-                ps.setString(4, m.getTrainingStatus());
-                ps.setInt(5, m.getProgressPercentage());
-                ps.setInt(6, m.getResearcherID());
+            ps.setString(1, m.getName());
+            ps.setInt(2, m.getDatasetID());
+            ps.setString(3, m.getParameters());
+            ps.setString(4, m.getTrainingStatus());
+            ps.setInt(5, m.getProgressPercentage());
+            ps.setInt(6, m.getResearcherID());
 
-                int rows = ps.executeUpdate();
-                return rows > 0;
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        m.setModelID(keys.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
+
         } catch (SQLException e){
             e.printStackTrace();
             return false;
@@ -88,30 +99,34 @@ public class MLModelDAO {
 
     public List<MLModel> getModelsByResearcher(int researcherID){
         List<MLModel> models = new ArrayList<>();
-        String  sql = "SELECT * FROM models where researcher_id = ?";
+        String sql = "SELECT * FROM models WHERE researcher_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-                
-                while (rs.next()) {
-                    MLModel m = new MLModel(
-                        rs.getInt("model_id"),
-                        rs.getString("name"),
-                        rs.getInt("dataset_id"),
-                        rs.getString("parameters"),
-                        rs.getString("training_status"),
-                        rs.getInt("progress_percent"),
-                        rs.getInt("researcher_id")
-                    );
-                    models.add(m);
-                }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
+          PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        return models;
+         ps.setInt(1, researcherID);
+
+         try (ResultSet rs = ps.executeQuery()) {
+              while (rs.next()) {
+                    MLModel m = new MLModel(
+                      rs.getInt("model_id"),
+                        rs.getString("name"),
+                      rs.getInt("dataset_id"),
+                      rs.getString("parameters"),
+                     rs.getString("training_status"),
+                       rs.getInt("progress_percent"),
+                     rs.getInt("researcher_id")
+                  );
+                   models.add(m);
+                }
+          }
+     } catch (SQLException e){
+         e.printStackTrace();
+     }
+
+     return models;
     }
+
 
     public boolean updateModel(MLModel m){
         String sql = "UPDATE models SET name = ?, dataset_id = ?, parameters = ? WHERE model_id = ?";
