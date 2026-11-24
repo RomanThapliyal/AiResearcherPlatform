@@ -33,6 +33,10 @@
             <div class="msg error">Something went wrong. Please try again.</div>
         <% } %>
 
+        <% if (request.getParameter("logged") != null) { %>
+            <div class="msg success">Experiment logged successfully.</div>
+        <% } %>
+
         <div class="card">
             <h2>Experiments<% if (modelIdParam != null) { %> for Model #<%= modelIdParam %><% } %></h2>
             <table>
@@ -54,7 +58,7 @@
                         <td><%= ex.getExperimentID() %></td>
                         <td><%= ex.getModelID() %></td>
                         <td><%= ex.getParameters() %></td>
-                        <td><%= ex.getResult() %></td>
+                        <td><%= ex.getResults() %></td>
                         <td><%= ex.getPerformanceMetric() %></td>
                     </tr>
                 <%
@@ -72,7 +76,7 @@
         <div class="card">
             <h2>Log a New Experiment</h2>
             <form action="ExperimentTrackingServlet" method="post">
-                <input type="hidden" name="action" value="create">
+                <input type="hidden" name="action" value="log">
                 <div class="form-group">
                     <label for="modelId">Model ID</label>
                     <input type="number" id="modelId" name="modelId" value="<%= modelIdParam != null ? modelIdParam : "" %>" required>
@@ -83,7 +87,7 @@
                 </div>
                 <div class="form-group">
                     <label for="result">Result</label>
-                    <textarea id="result" name="result" required></textarea>
+                    <textarea id="result" name="results" required></textarea>
                 </div>
                 <div class="form-group">
                     <label for="performanceMetric">Performance Metric</label>

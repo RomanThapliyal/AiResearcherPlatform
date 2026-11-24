@@ -82,12 +82,14 @@ public class DatasetDAO {
 
     public List<Dataset> getDatasetsByResearcher(int uploadedBy){
         List<Dataset> datasets = new ArrayList<>();
-        String  sql = "SELECT * FROM datasets where uploaded_by = ?";
+        String sql = "SELECT * FROM datasets WHERE uploaded_by = ?";
 
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-                
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, uploadedBy);
+
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Dataset d = new Dataset(
                         rs.getInt("dataset_id"),
@@ -98,6 +100,7 @@ public class DatasetDAO {
                     );
                     datasets.add(d);
                 }
+            }
         } catch (SQLException e){
             e.printStackTrace();
         }

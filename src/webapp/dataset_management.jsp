@@ -33,7 +33,7 @@
         <% if (request.getParameter("error") != null) { %>
             <div class="msg error">Something went wrong. Please try again.</div>
         <% } %>
-        <% if (request.getParameter("created") != null || request.getParameter("updated") != null || request.getParameter("deleted") != null) { %>
+        <% if (request.getParameter("uploaded") != null || request.getParameter("updated") != null || request.getParameter("deleted") != null) { %>
             <div class="msg success">Action completed successfully.</div>
         <% } %>
 

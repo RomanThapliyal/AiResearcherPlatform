@@ -18,8 +18,29 @@
     <meta charset="UTF-8">
     <title>Model Training</title>
     <link rel="stylesheet" href="css/style.css">
-    <meta http-equiv="refresh" content="5">
 </head>
+<%
+    boolean training = false;
+    if (models != null) {
+        for (MLModel m : models) {
+            if ("PENDING".equals(m.getTrainingStatus()) || "TRAINING".equals(m.getTrainingStatus())) {
+                training = true;
+                break;
+            }
+        }
+    }
+%>
+<% if (training) { %>
+<script>
+    setInterval(function () {
+        var typing = document.getElementById("name").value !== ""
+                  || document.getElementById("parameters").value !== "";
+        if (!typing) {
+            location.reload();
+        }
+    }, 5000);
+</script>
+<% } %>
 <body>
     <div class="navbar">
         <div class="brand">AI R&D Platform - Researcher</div>

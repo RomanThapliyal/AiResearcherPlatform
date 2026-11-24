@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,6 +29,9 @@ public class DatasetManagementServlet extends HttpServlet {
             response.sendRedirect("login.html");
             return;
         }
+
+        List<Dataset> datasets = researcherService.getMyDatasets(user.getUserID());
+        request.setAttribute("datasets", datasets);
 
         request.getRequestDispatcher("dataset_management.jsp")
                 .forward(request, response);

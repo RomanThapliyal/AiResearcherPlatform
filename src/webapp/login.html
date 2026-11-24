@@ -11,6 +11,7 @@
             <h1>AI Research & Development Platform</h1>
             <p style="text-align:center; margin-bottom:20px; color:#666;">Sign in to continue</p>
 
+            <div id="errorMsg" class="msg error" style="display:none;">Invalid email or password.</div>
             <form action="LoginServlet" method="post">
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -28,5 +29,10 @@
             </div>
         </div>
     </div>
+    <script>
+    if (new URLSearchParams(window.location.search).get("error") === "invalid") {
+        document.getElementById("errorMsg").style.display = "block";
+    }
+</script>
 </body>
 </html>

@@ -74,7 +74,7 @@ public class ExperimentTrackingServlet extends HttpServlet {
             boolean logged = researcherService.logExperiment(experiment);
 
             if (logged) {
-                response.sendRedirect("ExperimentTrackingServlet?logged=true");
+                response.sendRedirect("ExperimentTrackingServlet?modelId=" + modelId + "&logged=true");
             } else {
                 response.sendRedirect("ExperimentTrackingServlet?error=log");
             }
