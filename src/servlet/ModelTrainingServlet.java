@@ -9,6 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.List;
+import model.Dataset;
+
 import model.MLModel;
 import model.User;
 import service.ResearcherService;
@@ -28,6 +31,11 @@ public class ModelTrainingServlet extends HttpServlet {
             response.sendRedirect("login.html");
             return;
         }
+
+        List<MLModel> models = researcherService.getMyModels(user.getUserID());
+        List<Dataset> datasets = researcherService.getMyDatasets(user.getUserID());
+        request.setAttribute("models", models);
+        request.setAttribute("datasets", datasets);
 
         request.getRequestDispatcher("model_training.jsp")
                 .forward(request, response);

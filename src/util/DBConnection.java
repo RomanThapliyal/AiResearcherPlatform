@@ -10,6 +10,11 @@ public class DBConnection {
     private static final String PASS = "Rom42_2011";
 
     public static Connection getConnection() throws SQLException{
-        return DriverManager.getConnection(URL,USER,PASS);
+    try{
+        Class.forName("com.mysql.cj.jdbc.Driver");
+    }catch(ClassNotFoundException e){
+        throw new SQLException("MySQL JDBC Driver not found",e);
     }
+    return DriverManager.getConnection(URL,USER,PASS);
+}
 }

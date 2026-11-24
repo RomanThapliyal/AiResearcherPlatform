@@ -1,0 +1,204 @@
+/* AI Research & Development Platform - shared stylesheet */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f4f6f9;
+    color: #222;
+    line-height: 1.5;
+}
+
+a {
+    color: #2d6cdf;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #1f2a44;
+    color: #fff;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar .brand {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.navbar .nav-links a {
+    color: #d8e0f0;
+    margin-left: 16px;
+    font-size: 14px;
+}
+
+.navbar .nav-links a:hover {
+    color: #fff;
+}
+
+/* Page container */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+h1, h2, h3 {
+    margin-bottom: 14px;
+    color: #1f2a44;
+}
+
+/* Forms */
+form .form-group {
+    margin-bottom: 14px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #ccd3e0;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+button, .btn {
+    display: inline-block;
+    background-color: #2d6cdf;
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:hover, .btn:hover {
+    background-color: #1f54b5;
+    text-decoration: none;
+}
+
+button.danger, .btn.danger {
+    background-color: #d9534f;
+}
+
+button.danger:hover, .btn.danger:hover {
+    background-color: #b52b27;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e8ef;
+    font-size: 14px;
+}
+
+th {
+    background-color: #eef1f7;
+    color: #1f2a44;
+}
+
+tr:hover {
+    background-color: #f8faff;
+}
+
+/* Messages */
+.msg {
+    padding: 10px 14px;
+    border-radius: 5px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.msg.success {
+    background-color: #e3f6e8;
+    color: #1b7a3c;
+    border: 1px solid #b7e3c4;
+}
+
+.msg.error {
+    background-color: #fcebea;
+    color: #b3261e;
+    border: 1px solid #f3bdba;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #eef1f7;
+    color: #1f2a44;
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1f2a44;
+}
+
+.auth-box {
+    background: #fff;
+    width: 360px;
+    padding: 32px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.auth-box h1 {
+    font-size: 20px;
+    text-align: center;
+}
+
+.auth-box .switch-link {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 14px;
+}
