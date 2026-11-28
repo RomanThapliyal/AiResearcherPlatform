@@ -2,7 +2,9 @@ package servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -34,6 +36,9 @@ public class ProjectManagementServlet extends HttpServlet {
         List<Project> projects = adminService.getAllProjects();
         request.setAttribute("projects", projects);
 
+        List<User> users = adminService.getAllUsers();
+        request.setAttribute("users", users);
+
         request.getRequestDispatcher("project_management.jsp")
                 .forward(request, response);
     }
@@ -58,11 +63,31 @@ public class ProjectManagementServlet extends HttpServlet {
             String status = request.getParameter("status");
             String[] teamIds = request.getParameterValues("teamUserIds");
 
+            List<User> allUsers = adminService.getAllUsers();
+            Set<Integer> validIds = new HashSet<>();
+            if (allUsers != null) {
+                for (User u : allUsers) {
+                    validIds.add(u.getUserID());
+                }
+            }
+
             List<Integer> teamUserIds = new ArrayList<>();
 
             if (teamIds != null) {
                 for (String teamId : teamIds) {
-                    teamUserIds.add(Integer.parseInt(teamId));
+                    try {
+                        int id = Integer.parseInt(teamId.trim());
+                        if (!validIds.contains(id)) {
+                            response.sendRedirect("ProjectManagementServlet?error=invaliduser");
+                            return;
+                        }
+                        if (!teamUserIds.contains(id)) {
+                            teamUserIds.add(id);
+                        }
+                    } catch (NumberFormatException e) {
+                        response.sendRedirect("ProjectManagementServlet?error=invaliduser");
+                        return;
+                    }
                 }
             }
 

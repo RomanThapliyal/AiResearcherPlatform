@@ -1,13 +1,31 @@
-<%@ page import="java.util.List, model.User, model.Dataset" %>
+<%@ page import="java.util.List, java.io.File, model.User, model.Dataset" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
     if (sessionUser == null || !"RESEARCHER".equals(sessionUser.getRole())) {
         response.sendRedirect("login.html");
         return;
     }
-    // NOTE: assumes DatasetManagementServlet attaches the list as request attribute "datasets".
-    // Confirm against your servlet's doGet() and rename below if different.
     List<Dataset> datasets = (List<Dataset>) request.getAttribute("datasets");
+
+    String error = request.getParameter("error");
+    String errorMsg = null;
+    if (error != null) {
+        if ("file".equals(error)) {
+            errorMsg = "Please choose a dataset file (csv, tsv, json, txt, xlsx, xls or zip).";
+        } else if ("toolarge".equals(error)) {
+            errorMsg = "That file is too large. The limit is 20 MB.";
+        } else if ("upload".equals(error)) {
+            errorMsg = "The upload failed. Check the name and description and try again.";
+        } else if ("inuse".equals(error)) {
+            errorMsg = "This dataset was used to train a model, so it can't be deleted.";
+        } else if ("delete".equals(error)) {
+            errorMsg = "The dataset could not be deleted.";
+        } else if ("update".equals(error)) {
+            errorMsg = "The dataset could not be updated.";
+        } else {
+            errorMsg = "Something went wrong. Please try again.";
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,8 +48,8 @@
     </div>
 
     <div class="container">
-        <% if (request.getParameter("error") != null) { %>
-            <div class="msg error">Something went wrong. Please try again.</div>
+        <% if (errorMsg != null) { %>
+            <div class="msg error"><%= errorMsg %></div>
         <% } %>
         <% if (request.getParameter("uploaded") != null || request.getParameter("updated") != null || request.getParameter("deleted") != null) { %>
             <div class="msg success">Action completed successfully.</div>
@@ -45,20 +63,22 @@
                     <th>ID</th>
                     <th>Name</th>
                     <th>Description</th>
-                    <th>File Path</th>
+                    <th>File</th>
                     <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
                 <%
-                    if (datasets != null) {
+                    if (datasets != null && !datasets.isEmpty()) {
                         for (Dataset d : datasets) {
+                            String fileName = d.getFilePath() == null ? "" :
+                                    new File(d.getFilePath()).getName().replaceFirst("^\\d+_", "");
                 %>
                     <tr>
                         <td><%= d.getDatasetID() %></td>
                         <td><%= d.getName() %></td>
                         <td><%= d.getDescription() %></td>
-                        <td><%= d.getFilePath() %></td>
+                        <td><%= fileName %></td>
                         <td>
                             <form action="DatasetManagementServlet" method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
@@ -81,7 +101,7 @@
 
         <div class="card">
             <h2>Upload New Dataset</h2>
-            <form action="DatasetManagementServlet" method="post">
+            <form action="DatasetManagementServlet" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="upload">
                 <div class="form-group">
                     <label for="name">Name</label>
@@ -92,9 +112,9 @@
                     <textarea id="description" name="description" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="filePath">File Path</label>
-                    <input type="text" id="filePath" name="filePath" placeholder="e.g. /datasets/mydata.csv" required>
-                    <small style="color:#666;">Plain text path for now - actual file upload (multipart) is a later enhancement, not required by the framework.</small>
+                    <label for="file">Dataset File</label>
+                    <input type="file" id="file" name="file" accept=".csv,.tsv,.json,.txt,.xlsx,.xls,.zip" required>
+                    <small style="color:#666;">Allowed: csv, tsv, json, txt, xlsx, xls, zip. Maximum 20 MB.</small>
                 </div>
                 <button type="submit">Upload Dataset</button>
             </form>

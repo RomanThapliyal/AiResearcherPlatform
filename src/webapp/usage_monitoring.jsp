@@ -1,3 +1,4 @@
+
 <%@ page import="java.util.List, java.util.Map, model.User, model.UsageLog" %>
 <%
     User sessionUser = (User) session.getAttribute("user");
@@ -5,11 +6,21 @@
         response.sendRedirect("login.html");
         return;
     }
-    // NOTE: assumes UsageMonitoringServlet attaches these two attributes under these names,
-    // and that UsageLog has getLogID(), getResourceID(), getUserID(), getAction(), getTimestamp().
-    // Paste UsageLog.java and UsageMonitoringServlet.java if any of these don't match, so this can be corrected.
     List<UsageLog> usageLogs = (List<UsageLog>) request.getAttribute("usageLogs");
-    Map<Integer, Integer> usageCounts = (Map<Integer, Integer>) request.getAttribute("usageCounts");
+    Map<Integer, Integer> usageCounts = (Map<Integer, Integer>) request.getAttribute("usageCountByResource");
+
+    StringBuilder labels = new StringBuilder();
+    StringBuilder counts = new StringBuilder();
+    if (usageCounts != null) {
+        for (Map.Entry<Integer, Integer> e : usageCounts.entrySet()) {
+            if (labels.length() > 0) {
+                labels.append(",");
+                counts.append(",");
+            }
+            labels.append("\"Resource #").append(e.getKey()).append("\"");
+            counts.append(e.getValue());
+        }
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,11 +37,21 @@
             <a href="ResourceManagementServlet">Resources</a>
             <a href="ProjectManagementServlet">Projects</a>
             <a href="UsageMonitoringServlet">Usage Logs</a>
+            <a href="CollaborationServlet">Collaborations</a>
             <a href="LogoutServlet">Logout</a>
         </div>
     </div>
 
     <div class="container">
+        <div class="card">
+            <h2>Usage by Resource</h2>
+            <% if (usageCounts != null && !usageCounts.isEmpty()) { %>
+                <div style="max-width:700px;"><canvas id="usageChart"></canvas></div>
+            <% } else { %>
+                <p>No usage data to chart yet.</p>
+            <% } %>
+        </div>
+
         <div class="card">
             <h2>Usage Count by Resource</h2>
             <table>
@@ -69,21 +90,21 @@
                     <th>Log ID</th>
                     <th>Resource ID</th>
                     <th>User ID</th>
-                    <th>Action</th>
-                    <th>Timestamp</th>
+                    <th>Usage Detail</th>
+                    <th>Logged At</th>
                 </tr>
                 </thead>
                 <tbody>
                 <%
-                    if (usageLogs != null) {
+                    if (usageLogs != null && !usageLogs.isEmpty()) {
                         for (UsageLog log : usageLogs) {
                 %>
                     <tr>
                         <td><%= log.getLogID() %></td>
                         <td><%= log.getResourceID() %></td>
                         <td><%= log.getUserID() %></td>
-                        <td><%= log.getAction() %></td>
-                        <td><%= log.getTimestamp() %></td>
+                        <td><%= log.getUsageDetail() %></td>
+                        <td><%= log.getLoggedAt() %></td>
                     </tr>
                 <%
                         }
@@ -97,5 +118,28 @@
             </table>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script>
+        (function () {
+            var canvas = document.getElementById("usageChart");
+            if (!canvas || typeof Chart === "undefined") return;
+            new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: [<%= labels %>],
+                    datasets: [{
+                        label: "Times used",
+                        data: [<%= counts %>],
+                        backgroundColor: "#2d6cdf"
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
+        })();
+    </script>
 </body>
 </html>

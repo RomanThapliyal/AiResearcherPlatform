@@ -24,6 +24,7 @@
             <a href="ResourceManagementServlet">Resources</a>
             <a href="ProjectManagementServlet">Projects</a>
             <a href="UsageMonitoringServlet">Usage Logs</a>
+            <a href="CollaborationServlet">Collaborations</a>
             <a href="LogoutServlet">Logout</a>
         </div>
     </div>
